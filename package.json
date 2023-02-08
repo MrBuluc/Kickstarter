@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/MrBuluc/Kickstarter#readme",
   "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.6",
+    "dotenv": "^16.0.3",
     "fs-extra": "^11.1.0",
     "ganache-cli": "^6.12.2",
     "mocha": "^10.2.0",
