@@ -31,7 +31,7 @@ contract Campaign {
     mapping(address => bool) public approvers;
     mapping(address => uint) public contributeValues;
     Request[] public requests;
-    //uint public approversCount;
+    uint public approversCount;
 
     modifier restricted() {
         require(msg.sender == manager);
@@ -47,7 +47,7 @@ contract Campaign {
         require(msg.value > minContribution);
 
         approvers[msg.sender] = true;
-        //approversCount++;
+        approversCount++;
         contributeValues[msg.sender] += msg.value;
     }
 
