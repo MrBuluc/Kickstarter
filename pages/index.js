@@ -4,6 +4,7 @@ import factory from "../ethereum/factory";
 import Layout from "../components/Layout";
 import web3 from "../ethereum/web3";
 import Campaign from "../ethereum/build/Campaign.json";
+import { Link } from "../routes";
 
 class CampaignIndex extends Component {
   static async getInitialProps() {
@@ -28,7 +29,9 @@ class CampaignIndex extends Component {
         description: (
           <div>
             <h4>Manager: {campaignsManager.manager}</h4>
-            <a>View Campaign</a>
+            <Link route={`/campaigns/${campaignsManager.address}`}>
+              <a>View Campaign</a>
+            </Link>
           </div>
         ),
         fluid: true,
@@ -43,12 +46,16 @@ class CampaignIndex extends Component {
       <Layout>
         <div>
           <h3>Open Campaigns</h3>
-          <Button
-            floated="right"
-            content="Create Campaign"
-            icon="add"
-            primary
-          />
+          <Link route="/campaigns/new">
+            <a>
+              <Button
+                floated="right"
+                content="Create Campaign"
+                icon="add"
+                primary
+              />
+            </a>
+          </Link>
           {this.renderCampaigns()}
         </div>
       </Layout>
