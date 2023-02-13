@@ -8,21 +8,43 @@ class ContributeForm extends Component {
   state = { errorMessage: "", progressPercent: 0, value: "" };
 
   onSubmit = async (event) => {
-    event.preventDefault();
-    const campaign = getCampaign(this.props.address);
-    try {
-      const accounts = await web3.eth.getAccounts();
-      await campaign.methods.contribute().send({
-        from: accounts[0],
-        value: web3.utils.toWei(this.state.value, "ether"),
-      });
-      Router.replaceRoute(`/campaigns/${this.props.address}`);
-    } catch (e) {}
+    if (this.state.progressPercent === 0) {
+      event.preventDefault();
+      this.setState({ errorMessage: "" });
+      try {
+        this.incrementProgressPercent();
+        const campaign = getCampaign(this.props.address);
+        this.incrementProgressPercent();
+        const eth = web3.eth;
+        this.incrementProgressPercent();
+        const accounts = await eth.getAccounts();
+        this.incrementProgressPercent();
+        const methods = campaign.methods;
+        this.incrementProgressPercent();
+        const contribute = methods.contribute();
+        this.incrementProgressPercent();
+        await contribute.send({
+          from: accounts[0],
+          value: web3.utils.toWei(this.state.value, "ether"),
+        });
+        this.incrementProgressPercent();
+        Router.replaceRoute(`/campaigns/${this.props.address}`);
+      } catch (e) {
+        this.setState({ errorMessage: e.message, progressPercent: 0 });
+      }
+      this.setState({ value: "", progressPercent: 0 });
+    }
+  };
+
+  incrementProgressPercent = () => {
+    this.setState((prevState) => ({
+      progressPercent: prevState.progressPercent + 15,
+    }));
   };
 
   render() {
     return (
-      <Form onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
         <Form.Field>
           <label>Amount to Contribute</label>
           <Input
@@ -32,6 +54,7 @@ class ContributeForm extends Component {
             onChange={(event) => this.setState({ value: event.target.value })}
           />
         </Form.Field>
+        <Message error header="Opps" content={this.state.errorMessage} />
         <Button primary loading={this.state.progressPercent > 0}>
           Contribute!
         </Button>
