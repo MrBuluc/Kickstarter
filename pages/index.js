@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { Card, Button } from "semantic-ui-react";
 import factory from "../ethereum/factory";
 import Layout from "../components/Layout";
-import web3 from "../ethereum/web3";
-import Campaign from "../ethereum/build/Campaign.json";
+import getCampaign from "../ethereum/campaign";
 import { Link } from "../routes";
 
 class CampaignIndex extends Component {
@@ -11,12 +10,7 @@ class CampaignIndex extends Component {
     const campaigns = await factory.methods.getDeployedCampaigns().call();
     const campaignsManagerList = [];
     for (let address of campaigns) {
-      const manager = await new web3.eth.Contract(
-        JSON.parse(Campaign.interface),
-        address
-      ).methods
-        .manager()
-        .call();
+      const manager = await getCampaign(address).methods.manager().call();
       campaignsManagerList.push({ address, manager });
     }
     return { campaignsManagerList };

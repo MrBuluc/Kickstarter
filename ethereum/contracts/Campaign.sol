@@ -5,12 +5,12 @@ pragma solidity ^0.4.17;
 contract CampaignFactory {
     address[] public deployedCampaigns;
 
-    function createCampaign(uint min) public {
+    function createCampaign(uint256 min) public {
         address newCampaign = new Campaign(min, msg.sender);
         deployedCampaigns.push(newCampaign);
     }
 
-    function getDeployedCampaigns() public view returns(address[]) {
+    function getDeployedCampaigns() public view returns (address[]) {
         return deployedCampaigns;
     }
 }
@@ -18,27 +18,27 @@ contract CampaignFactory {
 contract Campaign {
     struct Request {
         string description;
-        uint value;
+        uint256 value;
         address recipient;
         bool complete;
-        uint yesCount;
-        uint noCount;
+        uint256 yesCount;
+        uint256 noCount;
         mapping(address => bool) approvals;
-}
+    }
 
     address public manager;
-    uint public minContribution;
+    uint256 public minContribution;
     mapping(address => bool) public approvers;
-    mapping(address => uint) public contributeValues;
+    mapping(address => uint256) public contributeValues;
     Request[] public requests;
-    uint public approversCount;
+    uint256 public approversCount;
 
     modifier restricted() {
         require(msg.sender == manager);
         _;
     }
 
-    function Campaign(uint min, address managerAdd) public {
+    function Campaign(uint256 min, address managerAdd) public {
         manager = managerAdd;
         minContribution = min;
     }
@@ -51,19 +51,23 @@ contract Campaign {
         contributeValues[msg.sender] += msg.value;
     }
 
-    function createRequest(string description, uint value, address recipient) public
-        restricted {
-            Request memory request = Request({
-                description: description,
-                value: value,
-                recipient: recipient,
-                complete: false,
-                yesCount: 0,
-                noCount: 0});
-            requests.push(request);
+    function createRequest(
+        string description,
+        uint256 value,
+        address recipient
+    ) public restricted {
+        Request memory request = Request({
+            description: description,
+            value: value,
+            recipient: recipient,
+            complete: false,
+            yesCount: 0,
+            noCount: 0
+        });
+        requests.push(request);
     }
 
-    function approveRequest(uint requestsIndex) public {
+    function approveRequest(uint256 requestsIndex) public {
         Request storage request = requests[requestsIndex];
 
         require(approvers[msg.sender]);
@@ -73,7 +77,7 @@ contract Campaign {
         request.yesCount += contributeValues[msg.sender];
     }
 
-    function disapproveRequest(uint requestsIndex) public {
+    function disapproveRequest(uint256 requestsIndex) public {
         Request storage request = requests[requestsIndex];
 
         require(approvers[msg.sender]);
@@ -83,7 +87,7 @@ contract Campaign {
         request.noCount += contributeValues[msg.sender];
     }
 
-    function finalizeRequest(uint requestsIndex) public restricted {
+    function finalizeRequest(uint256 requestsIndex) public restricted {
         Request storage request = requests[requestsIndex];
         //require(request.yesCount > (approversCount / 2));
         require(request.yesCount > request.noCount);
@@ -91,5 +95,29 @@ contract Campaign {
 
         request.recipient.transfer(request.value);
         request.complete = true;
+    }
+
+    function getSummary()
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address
+        )
+    {
+        return (
+            minContribution,
+            this.balance,
+            requests.length,
+            approversCount,
+            manager
+        );
+    }
+
+    function getRequestsCount() public view returns (uint256) {
+        return requests.length;
     }
 }
