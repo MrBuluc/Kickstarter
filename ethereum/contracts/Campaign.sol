@@ -92,6 +92,7 @@ contract Campaign {
     function finalizeRequest(uint256 requestsIndex) public restricted {
         Request storage request = requests[requestsIndex];
         //require(request.yesCount > (approversCount / 2));
+        require((request.yesCount + request.noCount) > (this.balance / 2));
         require(request.yesCount > request.noCount);
         require(!request.complete);
 
