@@ -30,7 +30,7 @@ class ContributeForm extends Component {
         this.incrementProgressPercent();
         Router.replaceRoute(`/campaigns/${this.props.address}`);
       } catch (e) {
-        this.setState({ errorMessage: e.message, progressPercent: 0 });
+        this.setState({ errorMessage: e.message });
       }
       this.setState({ value: "", progressPercent: 0 });
     }
@@ -54,7 +54,7 @@ class ContributeForm extends Component {
             onChange={(event) => this.setState({ value: event.target.value })}
           />
         </Form.Field>
-        <Message error header="Opps" content={this.state.errorMessage} />
+        <Message error header="Opps!" content={this.state.errorMessage} />
         <Button primary loading={this.state.progressPercent > 0}>
           Contribute!
         </Button>
