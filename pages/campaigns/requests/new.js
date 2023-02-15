@@ -42,11 +42,14 @@ class RequestNew extends Component {
         this.incrementProgressPercent();
         const methods = campaign.methods;
         this.incrementProgressPercent();
-        const ether = web3.utils.toWei(value, "ether");
-        this.incrementProgressPercent();
         await methods
-          .createRequest(description, ether, recipient)
+          .createRequest(
+            description,
+            web3.utils.toWei(value, "ether"),
+            recipient
+          )
           .send({ from: from });
+        this.incrementProgressPercent();
         Router.pushRoute(`/campaigns/${this.props.address}/requests`);
       } catch (e) {
         this.setState({ errorMessage: e.message, progressPercent: 0 });
